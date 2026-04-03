@@ -9,7 +9,7 @@ use App\Models\User;
 class AuthController extends Controller
 {
     public function showLogin() {
-        return view('login'); // This looks for login.blade.php
+        return view('login'); 
     }
 
     public function login(Request $request) {
