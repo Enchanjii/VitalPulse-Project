@@ -24,16 +24,11 @@ class UserSeeder extends Seeder
         // Create sample regular users
         User::create([
             'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => bcrypt('password123'),
+            'email' => 'test1@example.com',
+            'password' => bcrypt('test123'),
             'role' => 'user',
         ]);
 
-        User::create([
-            'name' => 'Jane Smith',
-            'email' => 'jane@example.com',
-            'password' => bcrypt('password123'),
-            'role' => 'user',
-        ]);
+        
     }
 }
