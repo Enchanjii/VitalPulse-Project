@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VitalPulse | Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -263,6 +266,7 @@
                 transform: translateY(-30px);
                 opacity: 0;
             }
+
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -313,6 +317,7 @@
                 width: 45%;
                 padding: 50px 60px;
             }
+
             .right-panel {
                 width: 55%;
             }
@@ -323,12 +328,14 @@
                 width: 50%;
                 padding: 40px 50px;
             }
+
             .right-panel {
                 width: 50%;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Success Modal -->
     <div id="successModal" class="success-modal">
@@ -342,7 +349,7 @@
 
     @if (session('success'))
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('successMessage').textContent = @json(session('success'));
                 showSuccessModal();
             });
@@ -382,7 +389,8 @@
                     </form>
 
                     <div class="switch-link">
-                        Don't have an account? <button type="button" onclick="switchTab('register')">Register here</button>
+                        Don't have an account? <button type="button" onclick="switchTab('register')">Register
+                            here</button>
                     </div>
                 </div>
 
@@ -390,7 +398,7 @@
                 <div id="register-tab" class="tab-content">
                     <div id="registerError" class="error-message"></div>
 
-                    <form id="registerForm">
+                    <form method="POST" action="{{ url('/register') }}" id="registerForm">
                         @csrf
                         <div class="form-group">
                             <label for="registerName">Full Name</label>
@@ -404,12 +412,14 @@
 
                         <div class="form-group">
                             <label for="registerPassword">Password</label>
-                            <input type="password" id="registerPassword" name="password" placeholder="••••••••" required>
+                            <input type="password" id="registerPassword" name="password" placeholder="••••••••"
+                                required>
                         </div>
 
                         <div class="form-group">
                             <label for="registerConfirm">Confirm Password</label>
-                            <input type="password" id="registerConfirm" name="password_confirmation" placeholder="••••••••" required>
+                            <input type="password" id="registerConfirm" name="password_confirmation"
+                                placeholder="••••••••" required>
                         </div>
 
                         <button type="submit" class="btn">Create Account</button>
@@ -425,8 +435,10 @@
         <!-- Right Panel -->
         <div class="right-panel">
             <div style="text-align: center; color: white; opacity: 0.9;">
-                <h1 style="font-size: 32px; margin-bottom: 20px; font-family: 'Poppins', sans-serif; font-weight: 700;">Welcome to VitalPulse</h1>
-                <p style="font-size: 16px; max-width: 300px; margin: 0; line-height: 1.6;">Track your health, elevate your fitness, achieve your goals</p>
+                <h1 style="font-size: 32px; margin-bottom: 20px; font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Welcome to VitalPulse</h1>
+                <p style="font-size: 16px; max-width: 300px; margin: 0; line-height: 1.6;">Track your health, elevate
+                    your fitness, achieve your goals</p>
             </div>
         </div>
     </div>
@@ -472,76 +484,80 @@
         }
 
         // Handle registration form submission
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const formData = new FormData(this);
+            const form = this;
+            const formData = new FormData(form);
             const errorDiv = document.getElementById('registerError');
 
-            fetch('{{ url("/register") }}', {
+            fetch(form.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'Accept': 'application/json',
+                    'Accept': 'application/json'
                 }
             })
-            .then(response => {
-                if (response.ok) {
-                    // Clear form
-                    document.getElementById('registerForm').reset();
-                    errorDiv.style.display = 'none';
+                .then(response => {
+                    if (response.ok) {
+                        return response.json().then(data => {
+                            // Clear form
+                            document.getElementById('registerForm').reset();
+                            errorDiv.style.display = 'none';
 
-                    // Show success modal
-                    document.getElementById('successMessage').textContent = 'Your account has been created successfully! You can now log in.';
-                    showSuccessModal();
-                    return response.json();
-                } else if (response.status === 422) {
-                    // Validation errors
-                    return response.json().then(data => {
-                        let errorMessages = '<strong>Registration Failed:</strong>';
-                        if (data.errors) {
-                            for (let field in data.errors) {
-                                errorMessages += '<div>' + data.errors[field][0] + '</div>';
+                            // Redirect to user dashboard
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
                             }
-                        }
-                        errorDiv.innerHTML = errorMessages;
-                        errorDiv.style.display = 'block';
-                        throw new Error('Validation error');
-                    });
-                } else {
-                    throw new Error('Registration failed');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                if (!errorDiv.innerHTML) {
-                    errorDiv.innerHTML = '<strong>Error:</strong> Registration failed. Please try again.';
-                }
-                errorDiv.style.display = 'block';
-            });
+                        });
+                    } else if (response.status === 422) {
+                        // Validation errors
+                        return response.json().then(data => {
+                            let errorMessages = '<strong>Registration Failed:</strong>';
+                            if (data.errors) {
+                                for (let field in data.errors) {
+                                    errorMessages += '<div>' + data.errors[field][0] + '</div>';
+                                }
+                            }
+                            errorDiv.innerHTML = errorMessages;
+                            errorDiv.style.display = 'block';
+                            throw new Error('Validation error');
+                        });
+                    } else {
+                        throw new Error('Registration failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    if (!errorDiv.innerHTML) {
+                        errorDiv.innerHTML = '<strong>Error:</strong> Registration failed. Please try again.';
+                    }
+                    errorDiv.style.display = 'block';
+                });
         });
 
         // Handle login errors if any
         @if ($errors->any())
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 const errors = @json($errors->all());
                 const errorDiv = document.getElementById('loginError');
-                
+
                 // Create safe DOM structure
                 errorDiv.innerHTML = ''; // Clear previous content
                 const strongElement = document.createElement('strong');
                 strongElement.textContent = 'Login Failed:';
                 errorDiv.appendChild(strongElement);
-                
-                errors.forEach(function(error) {
+
+                errors.forEach(function (error) {
                     const errorItem = document.createElement('div');
                     errorItem.textContent = error;
                     errorDiv.appendChild(errorItem);
                 });
-                
+
                 errorDiv.style.display = 'block';
             });
         @endif
     </script>
 </body>
+
 </html>
