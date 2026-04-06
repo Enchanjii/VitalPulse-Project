@@ -27,15 +27,8 @@ Password: admin123
 ### Regular User Accounts
 
 ```
-Email:    john@example.com
-Password: password123
-```
-
-OR
-
-```
-Email:    jane@example.com
-Password: password123
+Email:    test1@example.com
+Password: test123
 ```
 
 ---
